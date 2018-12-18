@@ -16,11 +16,19 @@ db.once('open', function callback() {
   console.log('Connected to Mongo Database');
 });
 
+/*var LogSchema = mongoose.Schema({
+  {description: 'string', duration: 'number', date: 'date'}
+});*/
+
 var UserProfile = mongoose.Schema({
-  _id: ,
-  username: ,
-  count: ,
-  log: ,
+  _id: {type:String, trim: true},
+  username: {type:String, trim:true, default:''},
+  count: {type:Integer, trim:true},
+  log: [{
+    description: String,
+    duration: Number,
+    date: Date
+  }],
 });
 
 var UserExerciseData = mongoose.model('UserExerciseData', UserProfile);
