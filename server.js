@@ -44,7 +44,7 @@ app.use((err, req, res, next) => {
 })
 
 app.post('/api/exercise/new-user', (req, res) => {
-  res.json({user: res});
+  res.send(req.body);
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
