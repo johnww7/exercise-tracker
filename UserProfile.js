@@ -23,7 +23,7 @@ db.once('open', function callback() {
 var UserProfile = mongoose.Schema({
   _id: {type:String, trim: true},
   username: {type:String, trim:true, default:''},
-  count: {type:Integer, trim:true},
+  count: {type:Integer, trim:true, default: 0},
   log: [{
     description: String,
     duration: Number,
