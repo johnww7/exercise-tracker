@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+const shortId = require('shortid');
 
 const cors = require('cors')
 
@@ -9,14 +10,21 @@ mongoose.connect(process.env.MLAB_URI || 'mongodb://localhost/exercise-track' )
 
 app.use(cors())
 
-app.use(bodyParser.urlencoded({extended: false}))
-app.use(bodyParser.json())
-
+//app.use(bodyParser.urlencoded({extended: false}))
+//app.use(bodyParser.json())
+var jsonParseer = bodyParser.json();
+var urlencodedParser = bodyParser.urlencoded({extended: false});
 
 app.use(express.static('public'))
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
+
+
+app.post('/api/exercise/new-user', urlencodedParser, (req, res) => {
+  res.json({username: req.body.username, id:shortId.generate()});
+});
+
 
 
 // Not found middleware
@@ -43,9 +51,7 @@ app.use((err, req, res, next) => {
     .send(errMessage)
 })
 
-app.post('/api/exercise/new-user', (req, res) => {
-  res.send(req.body);
-});
+
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)

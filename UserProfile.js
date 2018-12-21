@@ -1,7 +1,13 @@
 var mongoose = require('mongoose');
 
-mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGO_URI, {
+//mongoose.Promise = global.Promise;
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.set('useNewUrlParser', true);
+
+const MONGO_URI = 'mongodb://john:N1teLockon@ds035787.mlab.com:35787/jwfccmongodb';
+
+mongoose.connect(MONGO_URI, {
   keepAlive: true,
   reconnectTries: Number.MAX_VALUE,
   reconnectInterval: 500,
