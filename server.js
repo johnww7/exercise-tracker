@@ -5,6 +5,8 @@ const shortId = require('shortid');
 
 const cors = require('cors')
 
+const userData = require('./UserProfile.js').UserExerciseData;
+
 const mongoose = require('mongoose')
 mongoose.connect(process.env.MLAB_URI || 'mongodb://localhost/exercise-track' )
 
@@ -15,14 +17,26 @@ app.use(cors())
 var jsonParseer = bodyParser.json();
 var urlencodedParser = bodyParser.urlencoded({extended: false});
 
+var timeout = 35000;
+
 app.use(express.static('public'))
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
-
+const createUser = rerquire('./UserProfile.js').createUser;
 app.post('/api/exercise/new-user', urlencodedParser, (req, res) => {
-  res.json({username: req.body.username, id:shortId.generate()});
+  let userName = req.body.username;
+  let userID = shortId.generate();
+
+  let createTimeout = setTimeout(()=> {next({message: 'timeout'}) }, timeout)
+  createUser({_id: userID, username: userName}, (err, createData) => {
+    clearTimeout(createTimeout);
+    if(err) {return next(err)};
+    
+  });
+
+  res.json({_id:shortId.generate(), username: req.body.username});
 });
 
 

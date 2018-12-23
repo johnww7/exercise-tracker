@@ -30,11 +30,27 @@ var UserProfile = mongoose.Schema({
   _id: {type:String, trim: true},
   username: {type:String, trim:true, default:''},
   count: {type:Integer, trim:true, default: 0},
-  log: [{
-    description: String,
+  log: {
+    type: [{description: String,
     duration: Number,
-    date: Date
-  }],
+    date: Date}],
+    default: []
+  },
 });
 
 var UserExerciseData = mongoose.model('UserExerciseData', UserProfile);
+
+var createUser = (userEntry, done) => {
+  var userToCreate = new UserExerciseData(userEntry);
+  userToCreate.save((err, userData) => {
+    if(err) {return console.error(err)};
+    return done(null, userData);
+  });
+};
+
+
+
+
+
+exports.UserExerciseData = UserExerciesData;
+exports.createUser = createUser;
