@@ -29,12 +29,13 @@ db.once('open', function callback() {
 var UserProfile = mongoose.Schema({
   _id: {type:String, trim: true},
   username: {type:String, trim:true, default:''},
-  count: {type:Integer, trim:true, default: 0},
+  count: {type:Number, trim:true, default: 0},
   log: {
-    type: [{description: String,
-    duration: Number,
-    date: Date}],
-    default: []
+    type: [{
+      description: String,
+      duration: Number,
+      date: {type: Date, default:Date.now}
+    }], default: []
   },
 });
 
@@ -43,14 +44,20 @@ var UserExerciseData = mongoose.model('UserExerciseData', UserProfile);
 var createUser = (userEntry, done) => {
   var userToCreate = new UserExerciseData(userEntry);
   userToCreate.save((err, userData) => {
-    if(err) {return console.error(err)};
+    if(err) { return console.error(err); }
     return done(null, userData);
+  });
+};
+
+var checkUserName = (checkUser, done) => {
+  UserExerciseData.findOne({username: checkUser}, 'username _id', (err, doc) => {
+    if(err) { return console.error(err); }
+    return done(null, doc);
   });
 };
 
 
 
-
-
-exports.UserExerciseData = UserExerciesData;
+exports.UserExerciseData = UserExerciseData;
 exports.createUser = createUser;
+exports.checkUserName = checkUserName;

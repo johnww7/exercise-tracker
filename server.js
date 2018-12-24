@@ -24,19 +24,32 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
-const createUser = rerquire('./UserProfile.js').createUser;
+const createUser = require('./UserProfile.js').createUser;
+const checkUserName = require('./UserProfile.js').checkUserName;
 app.post('/api/exercise/new-user', urlencodedParser, (req, res) => {
   let userName = req.body.username;
   let userID = shortId.generate();
 
   let createTimeout = setTimeout(()=> {next({message: 'timeout'}) }, timeout)
-  createUser({_id: userID, username: userName}, (err, createData) => {
+  checkUserName(userName, (err, checkName) => {
     clearTimeout(createTimeout);
-    if(err) {return next(err)};
-    
+    if (err) {
+      return next(err);
+    }
+    if(checkName == null) {
+      createUser({_id: userID, username: userName}, (err, createData) => {
+
+        if(err) {return next(err)};
+        console.log("New User created");
+        res.json({_id: userID, username: userName});
+      });
+    }
+    else {
+      res.send("username already taken");
+    }
   });
 
-  res.json({_id:shortId.generate(), username: req.body.username});
+  //res.json({_id:shortId.generate(), username: req.body.username});
 });
 
 
