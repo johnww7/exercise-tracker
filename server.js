@@ -52,7 +52,22 @@ app.post('/api/exercise/new-user', urlencodedParser, (req, res) => {
   //res.json({_id:shortId.generate(), username: req.body.username});
 });
 
-
+const findAllUsers = require('./UserProfile.js').findAllUsers;
+app.get('/api/exercise/users', (req, res) => {
+  let findUsersTimeout = setTimeout(()=> {next({message: 'timeout'}) }, timeout);
+  findAllUsers((err, allUsers) => {
+    clearTimeout(findUsersTimeout);
+    if(err) {
+      return next(err);
+    }
+    if(allUsers == null) {
+      res.send('No users in tracker database');
+    }
+    else {
+      res.send(allUsers);
+    }
+  });
+});
 
 // Not found middleware
 app.use((req, res, next) => {

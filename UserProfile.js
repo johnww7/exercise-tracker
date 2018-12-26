@@ -56,8 +56,14 @@ var checkUserName = (checkUser, done) => {
   });
 };
 
-
+var findAllUsers = (done) => {
+  UserExerciseData.find({}, '_id username', (err, entries) => {
+    if(err) { return console.log(err); }
+    return done(null, entries);
+  });
+};
 
 exports.UserExerciseData = UserExerciseData;
 exports.createUser = createUser;
 exports.checkUserName = checkUserName;
+exports.findAllUsers = findAllUsers;
