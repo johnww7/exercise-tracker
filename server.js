@@ -69,6 +69,17 @@ app.get('/api/exercise/users', (req, res) => {
   });
 });
 
+app.post('/api/exercise/add', urlencodedParser, (req, res) => {
+  let userID = req.body.userId;
+  let description = req.body.description;
+  let duration = req.body.duration;
+  let date = req.body.date;
+
+  
+
+  res.json({userID, description, duration, date});
+});
+
 // Not found middleware
 app.use((req, res, next) => {
   return next({status: 404, message: 'not found'})

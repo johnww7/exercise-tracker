@@ -26,7 +26,7 @@ db.once('open', function callback() {
   {description: 'string', duration: 'number', date: 'date'}
 });*/
 
-var UserProfile = mongoose.Schema({
+let UserProfile = mongoose.Schema({
   _id: {type:String, trim: true},
   username: {type:String, trim:true, default:''},
   count: {type:Number, trim:true, default: 0},
@@ -39,29 +39,36 @@ var UserProfile = mongoose.Schema({
   },
 });
 
-var UserExerciseData = mongoose.model('UserExerciseData', UserProfile);
+let UserExerciseData = mongoose.model('UserExerciseData', UserProfile);
 
-var createUser = (userEntry, done) => {
-  var userToCreate = new UserExerciseData(userEntry);
+let createUser = (userEntry, done) => {
+  let userToCreate = new UserExerciseData(userEntry);
   userToCreate.save((err, userData) => {
     if(err) { return console.error(err); }
     return done(null, userData);
   });
 };
 
-var checkUserName = (checkUser, done) => {
+let checkUserName = (checkUser, done) => {
   UserExerciseData.findOne({username: checkUser}, 'username _id', (err, doc) => {
     if(err) { return console.error(err); }
     return done(null, doc);
   });
 };
 
-var findAllUsers = (done) => {
+let findAllUsers = (done) => {
   UserExerciseData.find({}, '_id username', (err, entries) => {
     if(err) { return console.log(err); }
     return done(null, entries);
   });
 };
+
+let findID = (id, done) => {
+  UserExerciseData.findOne({_id: id}, '_id', (err, doc) => {
+    if (err) { return console.error(err); }
+    return done(null, doc);
+  });
+}
 
 exports.UserExerciseData = UserExerciseData;
 exports.createUser = createUser;
