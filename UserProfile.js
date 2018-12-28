@@ -22,9 +22,21 @@ db.once('open', function callback() {
   console.log('Connected to Mongo Database');
 });
 
-/*var LogSchema = mongoose.Schema({
-  {description: 'string', duration: 'number', date: 'date'}
-});*/
+//Path `duration` is required.
+var LogSchema = mongoose.Schema({
+  description: {
+    type: String,
+    required: true
+  },
+  duration: {
+    type: Number,
+    required: true
+  },
+  date: {
+    type: Date,
+    default: Date.now
+  }
+});
 
 let UserProfile = mongoose.Schema({
   _id: {type:String, trim: true},
