@@ -26,28 +26,31 @@ db.once('open', function callback() {
 var LogSchema = mongoose.Schema({
   description: {
     type: String,
-    required: true
+    required: [true, 'Path `description` is required.']
   },
   duration: {
     type: Number,
-    required: true
+    required: [true, 'Path `duration` is required.']
   },
   date: {
     type: Date,
     default: Date.now
   }
 });
-
+/*log: {
+  type: [{
+    description: String,
+    duration: Number,
+    date: {type: Date, default:Date.now}
+  }], default: []
+}*/
 let UserProfile = mongoose.Schema({
   _id: {type:String, trim: true},
   username: {type:String, trim:true, default:''},
   count: {type:Number, trim:true, default: 0},
   log: {
-    type: [{
-      description: String,
-      duration: Number,
-      date: {type: Date, default:Date.now}
-    }], default: []
+    type: [LogSchema],
+    default: []
   },
 });
 
@@ -69,20 +72,26 @@ let checkUserName = (checkUser, done) => {
 };
 
 let findAllUsers = (done) => {
-  UserExerciseData.find({}, '_id username', (err, entries) => {
+  UserExerciseData.find({}, '_id username',(err, entries) => {
     if(err) { return console.log(err); }
     return done(null, entries);
   });
 };
 
 let findID = (id, done) => {
-  UserExerciseData.findOne({_id: id}, '_id', (err, doc) => {
+  UserExerciseData.findById(id).select('username count log').exec((err, data) => {
+    if(err) { return console.log(err); }
+    return done(null, data);
+  });
+
+/*  UserExerciseData.findOne({_id: id}, '_id', (err, doc) => {
     if (err) { return console.error(err); }
     return done(null, doc);
-  });
+  });*/
 }
 
 exports.UserExerciseData = UserExerciseData;
 exports.createUser = createUser;
 exports.checkUserName = checkUserName;
 exports.findAllUsers = findAllUsers;
+exports.findID = findID;

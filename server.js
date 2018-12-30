@@ -69,15 +69,28 @@ app.get('/api/exercise/users', (req, res) => {
   });
 });
 
+const findID = require('./UserProfile.js').findID;
 app.post('/api/exercise/add', urlencodedParser, (req, res) => {
   let userID = req.body.userId;
   let description = req.body.description;
   let duration = req.body.duration;
   let date = req.body.date;
 
-  
+  let addTimeout = setTimeout(()=> {next({message: 'timeout'}) }, timeout);
+  findID(userID, (err, idInfo) => {
+    clearTimeout(addTimeout);
+    if(err) {
+      return next(err);
+    }
+    if(idInfo == null) {
+      res.send('User id does not exist');
+    }
+    else {
+      res.json({info: idInfo});
+    }
+  });
 
-  res.json({userID, description, duration, date});
+  //res.json({userID, description, duration, date});
 });
 
 // Not found middleware
