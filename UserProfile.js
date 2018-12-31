@@ -96,8 +96,11 @@ let updateOptions = {
 
 let findUserIdAndUpdate = (logInfo, done) => {
   UserExerciseData.findById(logInfo.id).select('username count log').setOptions(updateOptions)
-  .update({ $push: {"log": {description: logInfo.description,
-    duration: logInfo.duration, date:logInfo.date}}}, {$inc: {count: 1}} )
+  .update({{ $push: {"log": {description: logInfo.description,
+    duration: logInfo.duration, date:logInfo.date}} }, {$inc: {count: 1} }}, (err, updatedData) => {
+      if (err) { return console.error(err); }
+      return done(null, updatedData);
+    });
 }
 
 exports.UserExerciseData = UserExerciseData;
@@ -105,3 +108,4 @@ exports.createUser = createUser;
 exports.checkUserName = checkUserName;
 exports.findAllUsers = findAllUsers;
 exports.findID = findID;
+exports.findUserIdAndUpdate = findUserIdAndUpdate;

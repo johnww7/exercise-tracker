@@ -70,28 +70,49 @@ app.get('/api/exercise/users', (req, res) => {
 });
 
 const findID = require('./UserProfile.js').findID;
+const findUserIdAndUpdate = require('./UserProfile.js').findUserIdAndUpdate;
 app.post('/api/exercise/add', urlencodedParser, (req, res) => {
-  let userID = req.body.userId;
+  let id = req.body.userId;
   let description = req.body.description;
   let duration = req.body.duration;
   let date = req.body.date;
 
-  let addTimeout = setTimeout(()=> {next({message: 'timeout'}) }, timeout);
-  findID(userID, (err, idInfo) => {
-    clearTimeout(addTimeout);
-    if(err) {
-      return next(err);
-    }
-    if(idInfo == null) {
-      res.send('User id does not exist');
-    }
-    else {
-      res.json({info: idInfo});
-    }
-  });
+  if(id === '' || id === ' ') {
+    res.send('unknown _id');
+  }
+  else if(description === '' || description === ' ') {
+    res.send('Path `description` is required.');
+  }
+  else if(duration === '' || duration === ' ') {
+    res.send('Path `durations` is required.');
+  }
+  else {
+    let addTimeout = setTimeout(()=> {next({message: 'timeout'}) }, timeout);
+    findUserIdAndUpdate({id, description, duration, date}, (err, doc) => {
+      if(err) {
+        res.send(err);
+      }
+
+    });
+  }
 
   //res.json({userID, description, duration, date});
 });
+
+/*
+findID(userID, (err, idInfo) => {
+  clearTimeout(addTimeout);
+  if(err) {
+    return next(err);
+  }
+  if(idInfo == null) {
+    res.send('User id does not exist');
+  }
+  else {
+    res.json({info: idInfo});
+  }
+});
+ */
 
 // Not found middleware
 app.use((req, res, next) => {
