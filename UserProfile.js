@@ -89,6 +89,16 @@ let findID = (id, done) => {
     return done(null, doc);
   });*/
 }
+let updateOptions = {
+  multi: true,
+  setDefaultsOnInsert: true
+};
+
+let findUserIdAndUpdate = (logInfo, done) => {
+  UserExerciseData.findById(logInfo.id).select('username count log').setOptions(updateOptions)
+  .update({ $push: {"log": {description: logInfo.description,
+    duration: logInfo.duration, date:logInfo.date}}}, {$inc: {count: 1}} )
+}
 
 exports.UserExerciseData = UserExerciseData;
 exports.createUser = createUser;
