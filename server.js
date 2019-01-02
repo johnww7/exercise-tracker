@@ -92,7 +92,7 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
       if(err) {
         res.send(err);
       }
-
+      res.send(doc);
     });
   }
 

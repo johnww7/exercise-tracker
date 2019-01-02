@@ -22,6 +22,29 @@ db.once('open', function callback() {
   console.log('Connected to Mongo Database');
 });
 
+let dateValidator = (date) => {
+  let regexDate = /^\d{4}\-\d{1,2}\-\d{1,2}$/;
+
+  if(!regexDate.text(date)) {
+    return false;
+  }
+  let dateBrokenApart = date.spilt('-');
+  let year = parseInt(dateBrokenApart[0], 10);
+  let month = parseInt(dateBrokenApart[1],10);
+  let day = parseInt(dateBrokenApart[2], 10);
+
+  if(year < 1000 || year > 3000 || month < 1 || month > 12) {
+    return false;
+  }
+  l
+  let monthLengths = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+
+  if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0)) {
+    monthLengths[1] = 29;
+  }
+  return day > 0 && day <= monthLengths[month - 1];
+}
+
 //Path `duration` is required.
 var LogSchema = mongoose.Schema({
   description: {
@@ -34,7 +57,8 @@ var LogSchema = mongoose.Schema({
   },
   date: {
     type: Date,
-    default: Date.now
+    default: Date.now,
+    validate: [dateValidator, 'invalide date']
   }
 });
 /*log: {
@@ -96,7 +120,7 @@ let updateOptions = {
 
 let findUserIdAndUpdate = (logInfo, done) => {
   UserExerciseData.findById(logInfo.id).select('username count log').setOptions(updateOptions)
-  .update({{ $push: {"log": {description: logInfo.description,
+  .updateOne({{ $push: {"log": {description: logInfo.description,
     duration: logInfo.duration, date:logInfo.date}} }, {$inc: {count: 1} }}, (err, updatedData) => {
       if (err) { return console.error(err); }
       return done(null, updatedData);
