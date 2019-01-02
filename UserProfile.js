@@ -113,18 +113,36 @@ let findID = (id, done) => {
     return done(null, doc);
   });*/
 }
+
 let updateOptions = {
   multi: true,
-  setDefaultsOnInsert: true
+  setDefaultsOnInsert: true,
+  new: true,
+
 };
 
 let findUserIdAndUpdate = (logInfo, done) => {
-  UserExerciseData.findById(logInfo.id).select('username count log').setOptions(updateOptions)
-  .updateOne({{ $push: {"log": {description: logInfo.description,
-    duration: logInfo.duration, date:logInfo.date}} }, {$inc: {count: 1} }}, (err, updatedData) => {
+  let dataToUpdate = {
+    log: {description: logInfo.description,
+            duration: logInfo.duration, date:logInfo.date},
+    $inc: {count: 1}
+  };
+
+  UserExerciseData.findByIdAndUpdate(logInfo.id, dataToUpdate, updateOptions, (err, updatedData) => {
+    if (err) { return console.error(err); }
+    //return done(null, updatedData);
+    UserExerciseData.findOne({_id: logInfo.id}, 'username log _id', (err, doc) => {
+        if (err) { return console.error(err); }
+        return done(null, doc);
+    });
+  });
+
+  /*UserExerciseData.findById(logInfo.id).select('username count log').setOptions(updateOptions)
+  .updateOne({ $push: {"log": {description: logInfo.description,
+    duration: logInfo.duration, date:logInfo.date}} }, {$inc: {count: 1} }, (err, updatedData) => {
       if (err) { return console.error(err); }
       return done(null, updatedData);
-    });
+    });*/
 }
 
 exports.UserExerciseData = UserExerciseData;
