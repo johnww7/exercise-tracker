@@ -80,15 +80,16 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
   if(id === '' || id === ' ') {
     res.send('unknown _id');
   }
-  else if(description === '' || description === ' ') {
+  /*else if(description === '' || description === ' ') {
     res.send('Path `description` is required.');
   }
   else if(duration === '' || duration === ' ') {
     res.send('Path `durations` is required.');
-  }
+  }*/
   else {
     let addTimeout = setTimeout(()=> {next({message: 'timeout'}) }, timeout);
     findUserIdAndUpdate({id, description, duration, date}, (err, doc) => {
+      clearTimeout(addTimeout);
       if(err) {
         res.send(err);
       }

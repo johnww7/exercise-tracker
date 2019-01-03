@@ -45,6 +45,8 @@ let dateValidator = (date) => {
   return day > 0 && day <= monthLengths[month - 1];
 }
 
+let dateValidate = [dateValidator, 'Invalid Date'];
+
 //Path `duration` is required.
 var LogSchema = mongoose.Schema({
   description: {
@@ -58,7 +60,7 @@ var LogSchema = mongoose.Schema({
   date: {
     type: Date,
     default: Date.now,
-    validate: [dateValidator, 'invalide date']
+    //validate: dateValidate
   }
 });
 /*log: {
@@ -123,8 +125,8 @@ let updateOptions = {
 
 let findUserIdAndUpdate = (logInfo, done) => {
   let dataToUpdate = {
-    log: {description: logInfo.description,
-            duration: logInfo.duration, date:logInfo.date},
+    $push: {log: {description: logInfo.description,
+            duration: logInfo.duration, date:logInfo.date}},
     $inc: {count: 1}
   };
 
