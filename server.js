@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const shortId = require('shortid');
+const moment = require('moment');
 
 const cors = require('cors')
 
@@ -80,13 +81,23 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
   if(id === '' || id === ' ') {
     res.send('unknown _id');
   }
-  /*else if(description === '' || description === ' ') {
+  else if(description === '' || description === ' ') {
     res.send('Path `description` is required.');
   }
   else if(duration === '' || duration === ' ') {
     res.send('Path `durations` is required.');
-  }*/
+  }
+  else if(!dateValidator(date) && (date !== '' || date !== ' ')) {
+    res.send('Invalid date');
+  }
   else {
+    //let dateToAdd = '';
+    if(date === '' || date === ' ') {
+      date = moment(Date.now()).format('YYYY MM DD');
+    }
+    else {
+      date = moment(date).format('YYYY MM DD');
+    }
     let addTimeout = setTimeout(()=> {next({message: 'timeout'}) }, timeout);
     findUserIdAndUpdate({id, description, duration, date}, (err, doc) => {
       clearTimeout(addTimeout);
@@ -114,6 +125,29 @@ findID(userID, (err, idInfo) => {
   }
 });
  */
+
+ let dateValidator = (date) => {
+   let regexDate = /^\d{4}\-\d{1,2}\-\d{1,2}$/;
+   console.log('date type: ' + typeof(date));
+   if(!regexDate.test(date)) {
+     return false;
+   }
+   let dateBrokenApart = date.split('-');
+   let year = parseInt(dateBrokenApart[0], 10);
+   let month = parseInt(dateBrokenApart[1],10);
+   let day = parseInt(dateBrokenApart[2], 10);
+
+   if(year < 1000 || year > 3000 || month < 1 || month > 12) {
+     return false;
+   }
+   l
+   let monthLengths = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+
+   if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0)) {
+     monthLengths[1] = 29;
+   }
+   return day > 0 && day <= monthLengths[month - 1];
+ }
 
 // Not found middleware
 app.use((req, res, next) => {

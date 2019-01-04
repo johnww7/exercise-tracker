@@ -25,7 +25,7 @@ db.once('open', function callback() {
 let dateValidator = (date) => {
   let regexDate = /^\d{4}\-\d{1,2}\-\d{1,2}$/;
 
-  if(!regexDate.text(date)) {
+  if(!regexDate.test(date)) {
     return false;
   }
   let dateBrokenApart = date.spilt('-');
