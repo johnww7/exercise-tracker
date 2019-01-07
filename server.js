@@ -78,6 +78,8 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
   let duration = req.body.duration;
   let date = req.body.date;
 
+  console.log('Result of dateval: ' + dateValidator(date));
+
   if(id === '' || id === ' ') {
     res.send('unknown _id');
   }
@@ -87,16 +89,22 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
   else if(duration === '' || duration === ' ') {
     res.send('Path `durations` is required.');
   }
-  else if(!dateValidator(date) && (date !== '' || date !== ' ')) {
+  /*else if(!dateValidator(date) && (date !== '' || date !== ' ')) {
     res.send('Invalid date');
-  }
+  }*/
   else {
+
     //let dateToAdd = '';
-    if(date === '' || date === ' ') {
-      date = moment(Date.now()).format('YYYY MM DD');
+    if(moment(date, 'YYYY-MM-DD').isValid()) {
+      date = date;
+    }
+    else if(date === '' || date === ' ') {
+      date = moment().format('YYYY MM DD');
     }
     else {
-      date = moment(date).format('YYYY MM DD');
+      res.send('Invalid date');
+      return;
+
     }
     let addTimeout = setTimeout(()=> {next({message: 'timeout'}) }, timeout);
     findUserIdAndUpdate({id, description, duration, date}, (err, doc) => {
@@ -128,8 +136,9 @@ findID(userID, (err, idInfo) => {
 
  let dateValidator = (date) => {
    let regexDate = /^\d{4}\-\d{1,2}\-\d{1,2}$/;
-   console.log('date type: ' + typeof(date));
-   if(!regexDate.test(date)) {
+   console.log('is date valid: ' + regexDate.test(date));
+
+   if(regexDate.test(date) == false) {
      return false;
    }
    let dateBrokenApart = date.split('-');
@@ -146,6 +155,7 @@ findID(userID, (err, idInfo) => {
    if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0)) {
      monthLengths[1] = 29;
    }
+   console.log(day > 0 && day <= monthLengths[month - 1]);
    return day > 0 && day <= monthLengths[month - 1];
  }
 
