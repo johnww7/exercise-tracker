@@ -59,7 +59,7 @@ var LogSchema = mongoose.Schema({
   },
   date: {
     type: Date,
-    default: Date.now,
+    default: () => { return new Date() }
     //validate: dateValidate
   }
 });
@@ -129,14 +129,15 @@ let findUserIdAndUpdate = (logInfo, done) => {
             duration: logInfo.duration, date:logInfo.date}},
     $inc: {count: 1}
   };
-
+  console.log('id for update: ' + logInfo.id + ' : ' + typeof(logInfo.id));
   UserExerciseData.findByIdAndUpdate(logInfo.id, dataToUpdate, updateOptions, (err, updatedData) => {
     if (err) { return console.error(err); }
     //return done(null, updatedData);
-    UserExerciseData.findOne({_id: logInfo.id}, 'username log _id', (err, doc) => {
+    /*UserExerciseData.findOne({_id: logInfo.id}, 'username log _id', (err, doc) => {
         if (err) { return console.error(err); }
         return done(null, doc);
-    });
+    });*/
+    return done(null, updatedData);
   });
 
   /*UserExerciseData.findById(logInfo.id).select('username count log').setOptions(updateOptions)

@@ -93,8 +93,8 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
     res.send('Invalid date');
   }*/
   else {
+    let invalidDate = false;
 
-    //let dateToAdd = '';
     if(moment(date, 'YYYY-MM-DD').isValid()) {
       date = date;
     }
@@ -102,18 +102,24 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
       date = moment().format('YYYY MM DD');
     }
     else {
-      res.send('Invalid date');
-      return;
+      invalidDate = true;
 
     }
-    let addTimeout = setTimeout(()=> {next({message: 'timeout'}) }, timeout);
-    findUserIdAndUpdate({id, description, duration, date}, (err, doc) => {
-      clearTimeout(addTimeout);
-      if(err) {
-        res.send(err);
-      }
-      res.send(doc);
-    });
+    if(invalidDate) {
+      res.send('Invalid Date');
+    }
+    else {
+      let addTimeout = setTimeout(()=> {next({message: 'timeout'}) }, timeout);
+      findUserIdAndUpdate({id, description, duration, date}, (err, doc) => {
+        clearTimeout(addTimeout);
+        if(err) {
+          console.log(err);
+          //res.send(err);
+        }
+        console.log("updated: " + doc);
+        res.json(doc);
+      });
+    }
   }
 
   //res.json({userID, description, duration, date});
