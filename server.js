@@ -99,7 +99,7 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
       date = date;
     }
     else if(date === '' || date === ' ') {
-      date = moment().format('YYYY MM DD');
+      date = moment().format('YYYY-MM-DD');
     }
     else {
       invalidDate = true;
@@ -109,14 +109,15 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
       res.send('Invalid Date');
     }
     else {
+      console.log('Dates format: ' + date);
       let addTimeout = setTimeout(()=> {next({message: 'timeout'}) }, timeout);
       findUserIdAndUpdate({id, description, duration, date}, (err, doc) => {
         clearTimeout(addTimeout);
         if(err) {
-          console.log(err);
-          //res.send(err);
+          //console.log(err);
+          res.send(err);
         }
-        console.log("updated: " + doc);
+
         res.json(doc);
       });
     }
@@ -155,7 +156,7 @@ findID(userID, (err, idInfo) => {
    if(year < 1000 || year > 3000 || month < 1 || month > 12) {
      return false;
    }
-   l
+
    let monthLengths = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
 
    if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0)) {

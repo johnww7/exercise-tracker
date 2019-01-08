@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+const moment = require('moment');
 
 //mongoose.Promise = global.Promise;
 mongoose.set('useFindAndModify', false);
@@ -126,17 +127,22 @@ let updateOptions = {
 let findUserIdAndUpdate = (logInfo, done) => {
   let dataToUpdate = {
     $push: {log: {description: logInfo.description,
-            duration: logInfo.duration, date:logInfo.date}},
+            duration: logInfo.duration, date: logInfo.date}},
     $inc: {count: 1}
   };
   console.log('id for update: ' + logInfo.id + ' : ' + typeof(logInfo.id));
   UserExerciseData.findByIdAndUpdate(logInfo.id, dataToUpdate, updateOptions, (err, updatedData) => {
-    if (err) { return console.error(err); }
+
+    if (err) {
+      console.log('Mongoose error: ' + err);
+      return console.error(err);
+    }
     //return done(null, updatedData);
     /*UserExerciseData.findOne({_id: logInfo.id}, 'username log _id', (err, doc) => {
         if (err) { return console.error(err); }
         return done(null, doc);
     });*/
+    //console.log('Mongoose update: ' + updatedData);
     return done(null, updatedData);
   });
 
