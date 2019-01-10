@@ -117,8 +117,9 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
           //console.log(err);
           res.send(err);
         }
-
-        res.json(doc);
+        console.log(doc);
+        let formattedDoc = formattedLog(doc);
+        res.json(formattedDoc);
       });
     }
   }
@@ -140,6 +141,20 @@ findID(userID, (err, idInfo) => {
   }
 });
  */
+
+let formattedLog = (logData) => {
+  let logArray = logData.log;
+  let newestLog = logArray[logArray.length-1];
+  return ({
+    "username": logData.username,
+    "description": newestLog['description'],
+    "duration": newestLog['duration'],
+    "_id": logData['_id'],
+    "date": moment(newestLog['date']).format('ddd MMM DD YYYY')
+  });
+  //Fri Oct 05 2018
+
+}
 
  let dateValidator = (date) => {
    let regexDate = /^\d{4}\-\d{1,2}\-\d{1,2}$/;
