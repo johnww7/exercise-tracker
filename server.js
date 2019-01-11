@@ -89,9 +89,6 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
   else if(duration === '' || duration === ' ') {
     res.send('Path `durations` is required.');
   }
-  /*else if(!dateValidator(date) && (date !== '' || date !== ' ')) {
-    res.send('Invalid date');
-  }*/
   else {
     let invalidDate = false;
 
@@ -124,8 +121,9 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
     }
   }
 
-  //res.json({userID, description, duration, date});
 });
+
+app.get('/api/exercise/log[?]');
 
 /*
 findID(userID, (err, idInfo) => {
@@ -152,7 +150,6 @@ let formattedLog = (logData) => {
     "_id": logData['_id'],
     "date": moment(newestLog['date']).format('ddd MMM DD YYYY')
   });
-  //Fri Oct 05 2018
 
 }
 
