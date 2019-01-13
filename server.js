@@ -123,7 +123,12 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
 
 });
 
-app.get('/api/exercise/log[?]');
+//GET /api/exercise/log?{userId}[&from][&to][&limit]
+//'/api/exercise/log?userId=:id&from=:startDate?&to=:endDate?&limit=:limit?'
+app.get('/^\/api\/exercise\/log?userId=(?:([^\/]+?))\/?$/i', (res, req) =>{
+  console.log(req.params);
+  res.json(req.params);
+});
 
 /*
 findID(userID, (err, idInfo) => {
