@@ -124,11 +124,13 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
 });
 
 //GET /api/exercise/log?{userId}[&from][&to][&limit]
+
 ///^\/api\/exercise\/log?userId=(?:([^\/]+?))\/?$/i
 //'/api/exercise/log\?userId=:id(\&from=:startDate)?(\&to=:endDate)?(\&limit=:limit)?'
-app.get('/api/exercise/log\?userId\=:id', urlencodedParser, (res, req) =>{
-  console.log(req.params);
-  res.send(req.params);
+let logRoute = /^\/api\/exercise\/log\?userId=([\w-]+)(?:&from=(\d{4}-\d{2}-\d{2}))?(?:&to=(\d{4}-\d{2}-\d{2}))?(?:&limit=(\d))?$/;
+app.get(logRoute, urlencodedParser, (res, req) =>{
+  console.log(req.params[0]);
+  res.send(req.params[0]);
 });
 
 /*
