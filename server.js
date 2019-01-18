@@ -125,10 +125,11 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
 
 //GET /api/exercise/log?{userId}[&from][&to][&limit]
 
-let logRoute = '/api/exercise/log\?userId=:id([\w-]+)(?:&from=:from(\d{4}-\d{2}-\d{2}))?(?:&to=:to(\d{4}-\d{2}-\d{2}))?(?:&limit=:limit(\d{2}))?';
-//let logRoute = /^\/api\/exercise\/log\?userId=([\w-]+)(?:&from=(\d{4}-\d{2}-\d{2}))?(?:&to=(\d{4}-\d{2}-\d{2}))?(?:&limit=(\d))?$/;
+let logRoute = '/api/exercise/log?userId=:id([\w-]+)'
+//let logRoute = '/api/exercise/log\?userId=:id([\w-]+)(?:&from=:from(\d{4}-\d{2}-\d{2}))?(?:&to=:to(\d{4}-\d{2}-\d{2}))?(?:&limit=:limit(\d{2}))?';
+//let logRoute = /^\/api\/exercise\/log\?userId=(?:([\w-]+))(?:&from=(?:(\d{4}-\d{2}-\d{2})))?(?:&to=(?:(\d{4}-\d{2}-\d{2})))?(?:&limit=(?:(\d{2})))?\/?$/i;
 app.get(logRoute, (res, req) =>{
-  console.log(req.params.id + ' ' + req.params.from);
+  console.log(req.params.id);
   res.send(req.params.id);
 });
 
