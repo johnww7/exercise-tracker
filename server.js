@@ -13,8 +13,8 @@ mongoose.connect(process.env.MLAB_URI || 'mongodb://localhost/exercise-track' )
 
 app.use(cors())
 
-//app.use(bodyParser.urlencoded({extended: false}))
-//app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.json())
 var jsonParseer = bodyParser.json();
 var urlencodedParser = bodyParser.urlencoded({extended: false});
 
@@ -51,6 +51,14 @@ app.post('/api/exercise/new-user', urlencodedParser, (req, res) => {
   });
 
   //res.json({_id:shortId.generate(), username: req.body.username});
+});
+
+app.get('/api/exercise/log', (req, res) =>{
+  let {userId, from, to, limit} = req.query;
+  
+
+  //console.log(JSON.stringify(req.query));
+  res.send({userId, from, to, limit});
 });
 
 const findAllUsers = require('./UserProfile.js').findAllUsers;
@@ -129,10 +137,7 @@ let logRoute = '/api/exercise/log?userId=:id([\w-]+)';
 let logExpression = /^\/api\/exercise\/log\?userId=(?:([\w-]+))(?:&from=(?:(\d{4}-\d{2}-\d{2})))?(?:&to=(?:(\d{4}-\d{2}-\d{2})))?(?:&limit=(?:(\d{2})))?\/?$/i;
 //let logRoute = '/api/exercise/log\?userId=:id([\w-]+)(?:&from=:from(\d{4}-\d{2}-\d{2}))?(?:&to=:to(\d{4}-\d{2}-\d{2}))?(?:&limit=:limit(\d{2}))?';
 //let logRoute = /^\/api\/exercise\/log\?userId=(?:([\w-]+))(?:&from=(?:(\d{4}-\d{2}-\d{2})))?(?:&to=(?:(\d{4}-\d{2}-\d{2})))?(?:&limit=(?:(\d{2})))?\/?$/i;
-app.get('/api/exercise/log', (res, req) =>{
-  console.log(req.query);
-  res.json(req.query);
-});
+
 
 /*
 findID(userID, (err, idInfo) => {
