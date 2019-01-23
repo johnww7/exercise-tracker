@@ -53,13 +53,27 @@ app.post('/api/exercise/new-user', urlencodedParser, (req, res) => {
   //res.json({_id:shortId.generate(), username: req.body.username});
 });
 
+
 app.get('/api/exercise/log', (req, res) =>{
   let {userId, from, to, limit} = req.query;
-  
 
-  //console.log(JSON.stringify(req.query));
+  //let logRequest = checkLogInput({userId, from, to, limit});
+  if(userId === "" || userId === " "){
+    res.send("unknown userId");
+    
+  }
+
   res.send({userId, from, to, limit});
 });
+
+/*let checkLogInput = (logInput) => {
+  //console.log('Received');
+  let {userId, from, to, limit} = logInput;
+  if(userId === '' || userId === ' '){
+    return ({userId: 'unknown userId'});
+  }
+
+}*/
 
 const findAllUsers = require('./UserProfile.js').findAllUsers;
 app.get('/api/exercise/users', (req, res) => {
@@ -133,7 +147,7 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
 
 //GET /api/exercise/log?{userId}[&from][&to][&limit]
 
-let logRoute = '/api/exercise/log?userId=:id([\w-]+)';
+//let logRoute = '/api/exercise/log?userId=:id([\w-]+)';
 let logExpression = /^\/api\/exercise\/log\?userId=(?:([\w-]+))(?:&from=(?:(\d{4}-\d{2}-\d{2})))?(?:&to=(?:(\d{4}-\d{2}-\d{2})))?(?:&limit=(?:(\d{2})))?\/?$/i;
 //let logRoute = '/api/exercise/log\?userId=:id([\w-]+)(?:&from=:from(\d{4}-\d{2}-\d{2}))?(?:&to=:to(\d{4}-\d{2}-\d{2}))?(?:&limit=:limit(\d{2}))?';
 //let logRoute = /^\/api\/exercise\/log\?userId=(?:([\w-]+))(?:&from=(?:(\d{4}-\d{2}-\d{2})))?(?:&to=(?:(\d{4}-\d{2}-\d{2})))?(?:&limit=(?:(\d{2})))?\/?$/i;
