@@ -67,10 +67,22 @@ app.get('/api/exercise/log', (req, res) =>{
     userLog.findOne((err, data) => {
       if(err) { return next(err);}
       if(data) {
-        userLog.select('id username count log').exec((err, result) => {
-          if(err) { return next(err); }
-          res.send(result);
-        });
+        if(from !== '' || from !== ' '){
+          userLog.where('data.log.date').gte(from).exec((err, result) => {
+            if(err) { return next(err); }
+            //res.send(result);
+            res.json({_id: result.id, username: result.username,
+              count: result.count, log: result.log});
+          });
+        }
+        else {
+          userLog.select('id username count log').exec((err, result) => {
+            if(err) { return next(err); }
+            //res.send(result);
+            res.json({_id: result.id, username: result.username,
+              count: result.count, log: result.log});
+          });
+        }
           //res.send(data);
       }
     });
