@@ -60,10 +60,23 @@ app.get('/api/exercise/log', (req, res) =>{
   //let logRequest = checkLogInput({userId, from, to, limit});
   if(userId === "" || userId === " "){
     res.send("unknown userId");
-    
+
+  }
+  else {
+    var userLog = userData.where({_id: userId});
+    userLog.findOne((err, data) => {
+      if(err) { return next(err);}
+      if(data) {
+        userLog.select('id username count log').exec((err, result) => {
+          if(err) { return next(err); }
+          res.send(result);
+        });
+          //res.send(data);
+      }
+    });
   }
 
-  res.send({userId, from, to, limit});
+  //res.send({userId, from, to, limit});
 });
 
 /*let checkLogInput = (logInput) => {

@@ -146,6 +146,8 @@ let findUserIdAndUpdate = (logInfo, done) => {
     return done(null, updatedData);
   });
 
+  
+
   /*UserExerciseData.findById(logInfo.id).select('username count log').setOptions(updateOptions)
   .updateOne({ $push: {"log": {description: logInfo.description,
     duration: logInfo.duration, date:logInfo.date}} }, {$inc: {count: 1} }, (err, updatedData) => {
