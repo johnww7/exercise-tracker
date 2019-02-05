@@ -56,6 +56,7 @@ app.post('/api/exercise/new-user', urlencodedParser, (req, res) => {
 
 app.get('/api/exercise/log', (req, res) =>{
   let {userId, from, to, limit} = req.query;
+  console.log('typeof from: ' + typeof(from));
 
   //let logRequest = checkLogInput({userId, from, to, limit});
   if(userId === "" || userId === " "){
@@ -67,8 +68,11 @@ app.get('/api/exercise/log', (req, res) =>{
     userLog.findOne((err, data) => {
       if(err) { return next(err);}
       if(data) {
-        if(from !== '' || from !== ' '){
-          userLog.where('data.log.date').gte(from).exec((err, result) => {
+        userLog.select('id username count log');
+        if(from !== undefined){
+          //let fromDateToISO = new Date(from).toISOString();
+          userLog.exec((err, result) => {
+            console.log('here at from');
             if(err) { return next(err); }
             //res.send(result);
             res.json({_id: result.id, username: result.username,
@@ -76,7 +80,7 @@ app.get('/api/exercise/log', (req, res) =>{
           });
         }
         else {
-          userLog.select('id username count log').exec((err, result) => {
+          userLog.exec((err, result) => {
             if(err) { return next(err); }
             //res.send(result);
             res.json({_id: result.id, username: result.username,
