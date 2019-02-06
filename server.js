@@ -74,9 +74,13 @@ app.get('/api/exercise/log', (req, res) =>{
           userLog.exec((err, result) => {
             console.log('here at from');
             if(err) { return next(err); }
-            //res.send(result);
-            res.json({_id: result.id, username: result.username,
-              count: result.count, log: result.log});
+            let newLog = result['log'].filter((elem) => {
+              return elem.date >= new Date(from);
+            });
+            console.log(newLog);
+            res.send(result.log);
+            //res.json({_id: result.id, username: result.username,
+            //  count: result.count, log: result.log});
           });
         }
         else {
