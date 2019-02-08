@@ -75,10 +75,23 @@ app.get('/api/exercise/log', (req, res) =>{
             console.log('here at from');
             if(err) { return next(err); }
             let newLog = result['log'].filter((elem) => {
+              //return moment(elem.date >= new Date(from)).format('ddd MMM DD YYYY');
+              //elem.date = moment(elem.date).format('ddd MMM DD YYYY');
               return elem.date >= new Date(from);
+            }).map((logObj) => {
+              return { description: logObj.description, duration: logObj.duration,
+                date: moment(logObj.date).format('ddd MMM DD YYYY') };
+              //return moment(logObj.date).format('ddd MMM DD YYYY');
             });
-            console.log(newLog);
-            res.send(result.log);
+            console.log("Display: " + result);
+            res.json({
+              _id: result.id,
+              username: result.username,
+              from: moment(from).format('ddd MMM DD YYYY'),
+              count: result.count,
+              log: newLog
+            });
+
             //res.json({_id: result.id, username: result.username,
             //  count: result.count, log: result.log});
           });
@@ -87,8 +100,13 @@ app.get('/api/exercise/log', (req, res) =>{
           userLog.exec((err, result) => {
             if(err) { return next(err); }
             //res.send(result);
+            let formatedLog = result['log'].map((elem) => {
+              return { description: elem.description, duration: elem.duration,
+                date: moment(elem.date).format('ddd MMM DD YYYY') };
+            });
             res.json({_id: result.id, username: result.username,
-              count: result.count, log: result.log});
+              from: moment(from).format('ddd MMM DD YYYY'), count: result.count,
+              log: formatedLog});
           });
         }
           //res.send(data);
