@@ -69,7 +69,29 @@ app.get('/api/exercise/log', (req, res) =>{
       if(err) { return next(err);}
       if(data) {
         userLog.select('id username count log');
-        if(from !== undefined){
+
+        if(from !== undefined && to !== undefined) {
+          userLog.exec((err, result) => {
+            console.log('here at from and to');
+            if(err) { return next(err); }
+            let toNewLog = result['log'].filter((elem) => {
+              return elem.date >= new Date(from) && elem.date <= new Date(to);
+            }).map((logObj) => {
+              return { description: logObj.description, duration: logObj.duration,
+                date: moment(logObj.date).format('ddd MMM DD YYYY') };
+            });
+            console.log('Display 2:' + toNewLog);
+            res.json({
+              _id: result.id,
+              username: result.username,
+              from: moment(from).format('ddd MMM DD YYYY'),
+              to: moment(to).format('ddd MMM DD YYYY'),
+              count: result.count,
+              log: toNewLog
+            });
+          });
+        }
+        else if(from !== undefined){
           //let fromDateToISO = new Date(from).toISOString();
           userLog.exec((err, result) => {
             console.log('here at from');
@@ -92,8 +114,6 @@ app.get('/api/exercise/log', (req, res) =>{
               log: newLog
             });
 
-            //res.json({_id: result.id, username: result.username,
-            //  count: result.count, log: result.log});
           });
         }
         else {
