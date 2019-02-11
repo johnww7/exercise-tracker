@@ -56,7 +56,7 @@ app.post('/api/exercise/new-user', urlencodedParser, (req, res) => {
 
 app.get('/api/exercise/log', (req, res) =>{
   let {userId, from, to, limit} = req.query;
-  console.log('typeof from: ' + typeof(from));
+  console.log('typeof limit: ' + typeof(limit));
 
   //let logRequest = checkLogInput({userId, from, to, limit});
   if(userId === "" || userId === " "){
@@ -70,7 +70,20 @@ app.get('/api/exercise/log', (req, res) =>{
       if(data) {
         userLog.select('id username count log');
 
-        if(from !== undefined && to !== undefined) {
+        if(from !== undefined && to !== undefined && limit !== undefined) {
+          userLog.exec((err, result) => {
+            if(err) { return next(err); }
+            //Parse user log with from and to Dates
+
+            //Limit number of logs returned by using Limit
+
+            //Return users log
+
+            res.json({result});
+          });
+
+        }
+        else if(from !== undefined && to !== undefined) {
           userLog.exec((err, result) => {
             console.log('here at from and to');
             if(err) { return next(err); }
