@@ -74,12 +74,23 @@ app.get('/api/exercise/log', (req, res) =>{
           userLog.exec((err, result) => {
             if(err) { return next(err); }
             //Parse user log with from and to Dates
+            let toAndFromLog = dateFinder(result,from, to);
 
             //Limit number of logs returned by using Limit
+            if(limit === 0) {
+              toAndFromLog.length = 0;
+            }
+            let limitedLog = toAndFromLog.slice(0, limit);
 
             //Return users log
-
-            res.json({result});
+            res.json({
+              _id: result.id,
+              username: result.username,
+              from: moment(from).format('ddd MMM DD YYYY'),
+              to: moment(to).format('ddd MMM DD YYYY'),
+              count: result.count,
+              log: limitedLog
+            });
           });
 
         }
@@ -87,12 +98,8 @@ app.get('/api/exercise/log', (req, res) =>{
           userLog.exec((err, result) => {
             console.log('here at from and to');
             if(err) { return next(err); }
-            let toNewLog = result['log'].filter((elem) => {
-              return elem.date >= new Date(from) && elem.date <= new Date(to);
-            }).map((logObj) => {
-              return { description: logObj.description, duration: logObj.duration,
-                date: moment(logObj.date).format('ddd MMM DD YYYY') };
-            });
+            let toNewLog = dateFinder(result, from, to);
+
             console.log('Display 2:' + toNewLog);
             res.json({
               _id: result.id,
@@ -110,13 +117,10 @@ app.get('/api/exercise/log', (req, res) =>{
             console.log('here at from');
             if(err) { return next(err); }
             let newLog = result['log'].filter((elem) => {
-              //return moment(elem.date >= new Date(from)).format('ddd MMM DD YYYY');
-              //elem.date = moment(elem.date).format('ddd MMM DD YYYY');
               return elem.date >= new Date(from);
             }).map((logObj) => {
               return { description: logObj.description, duration: logObj.duration,
                 date: moment(logObj.date).format('ddd MMM DD YYYY') };
-              //return moment(logObj.date).format('ddd MMM DD YYYY');
             });
             console.log("Display: " + result);
             res.json({
@@ -150,14 +154,15 @@ app.get('/api/exercise/log', (req, res) =>{
   //res.send({userId, from, to, limit});
 });
 
-/*let checkLogInput = (logInput) => {
-  //console.log('Received');
-  let {userId, from, to, limit} = logInput;
-  if(userId === '' || userId === ' '){
-    return ({userId: 'unknown userId'});
-  }
-
-}*/
+let dateFinder = (userLog, fromDate, toDate) => {
+  let parsedLog = userLog['log'].filter((elem) => {
+    return elem.date >= new Date(fromDate) && elem.date <= new Date(toDate);
+  }).map((logObj) => {
+    return { description: logObj.description, duration: logObj.duration,
+      date: moment(logObj.date).format('ddd MMM DD YYYY') };
+  });
+  return parsedLog;
+}
 
 const findAllUsers = require('./UserProfile.js').findAllUsers;
 app.get('/api/exercise/users', (req, res) => {
