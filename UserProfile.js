@@ -64,13 +64,7 @@ var LogSchema = mongoose.Schema({
     //validate: dateValidate
   }
 });
-/*log: {
-  type: [{
-    description: String,
-    duration: Number,
-    date: {type: Date, default:Date.now}
-  }], default: []
-}*/
+
 let UserProfile = mongoose.Schema({
   _id: {type:String, trim: true},
   username: {type:String, trim:true, default:''},
@@ -111,10 +105,6 @@ let findID = (id, done) => {
     return done(null, data);
   });
 
-/*  UserExerciseData.findOne({_id: id}, '_id', (err, doc) => {
-    if (err) { return console.error(err); }
-    return done(null, doc);
-  });*/
 }
 
 let updateOptions = {
@@ -137,23 +127,10 @@ let findUserIdAndUpdate = (logInfo, done) => {
       console.log('Mongoose error: ' + err);
       return console.error(err);
     }
-    //return done(null, updatedData);
-    /*UserExerciseData.findOne({_id: logInfo.id}, 'username log _id', (err, doc) => {
-        if (err) { return console.error(err); }
-        return done(null, doc);
-    });*/
-    //console.log('Mongoose update: ' + updatedData);
+
     return done(null, updatedData);
   });
 
-  
-
-  /*UserExerciseData.findById(logInfo.id).select('username count log').setOptions(updateOptions)
-  .updateOne({ $push: {"log": {description: logInfo.description,
-    duration: logInfo.duration, date:logInfo.date}} }, {$inc: {count: 1} }, (err, updatedData) => {
-      if (err) { return console.error(err); }
-      return done(null, updatedData);
-    });*/
 }
 
 exports.UserExerciseData = UserExerciseData;

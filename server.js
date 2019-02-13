@@ -61,7 +61,6 @@ app.get('/api/exercise/log', (req, res) =>{
   //let logRequest = checkLogInput({userId, from, to, limit});
   if(userId === "" || userId === " "){
     res.send("unknown userId");
-
   }
   else {
     var userLog = userData.where({_id: userId});
@@ -147,6 +146,9 @@ app.get('/api/exercise/log', (req, res) =>{
           });
         }
           //res.send(data);
+      }
+      else {
+        res.send("unknown userId");
       }
     });
   }
@@ -234,28 +236,6 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
 
 });
 
-//GET /api/exercise/log?{userId}[&from][&to][&limit]
-
-//let logRoute = '/api/exercise/log?userId=:id([\w-]+)';
-let logExpression = /^\/api\/exercise\/log\?userId=(?:([\w-]+))(?:&from=(?:(\d{4}-\d{2}-\d{2})))?(?:&to=(?:(\d{4}-\d{2}-\d{2})))?(?:&limit=(?:(\d{2})))?\/?$/i;
-//let logRoute = '/api/exercise/log\?userId=:id([\w-]+)(?:&from=:from(\d{4}-\d{2}-\d{2}))?(?:&to=:to(\d{4}-\d{2}-\d{2}))?(?:&limit=:limit(\d{2}))?';
-//let logRoute = /^\/api\/exercise\/log\?userId=(?:([\w-]+))(?:&from=(?:(\d{4}-\d{2}-\d{2})))?(?:&to=(?:(\d{4}-\d{2}-\d{2})))?(?:&limit=(?:(\d{2})))?\/?$/i;
-
-
-/*
-findID(userID, (err, idInfo) => {
-  clearTimeout(addTimeout);
-  if(err) {
-    return next(err);
-  }
-  if(idInfo == null) {
-    res.send('User id does not exist');
-  }
-  else {
-    res.json({info: idInfo});
-  }
-});
- */
 
 let formattedLog = (logData) => {
   let logArray = logData.log;
