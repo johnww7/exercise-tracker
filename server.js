@@ -93,7 +93,8 @@ app.get('/api/exercise/log', (req, res) =>{
           });
 
         }
-        else if(from !== undefined && to !== undefined) {
+        else if((from !== undefined && moment(from, 'YYYY-MM-DD').isValid()) &&
+        (to !== undefined && moment(to, 'YYYY-MM-DD').isValid())) {
           userLog.exec((err, result) => {
             console.log('here at from and to');
             if(err) { return next(err); }
@@ -110,7 +111,7 @@ app.get('/api/exercise/log', (req, res) =>{
             });
           });
         }
-        else if(from !== undefined){
+        else if(from !== undefined && (moment(from, 'YYYY-MM-DD').isValid())){
           //let fromDateToISO = new Date(from).toISOString();
           userLog.exec((err, result) => {
             console.log('here at from');
@@ -141,7 +142,7 @@ app.get('/api/exercise/log', (req, res) =>{
                 date: moment(elem.date).format('ddd MMM DD YYYY') };
             });
             res.json({_id: result.id, username: result.username,
-              from: moment(from).format('ddd MMM DD YYYY'), count: result.count,
+              count: result.count,
               log: formatedLog});
           });
         }
