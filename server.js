@@ -74,12 +74,19 @@ app.get('/api/exercise/log', (req, res) =>{
             if(err) { return next(err); }
             //Parse user log with from and to Dates
             let toAndFromLog = dateFinder(result,from, to);
-
+            console.log("array: " + typeof(toAndFromLog));
             //Limit number of logs returned by using Limit
-            if(limit === 0) {
-              toAndFromLog.length = 0;
+            let logLimit = 0;
+            if(parseInt(limit) === 0 || isNaN(parseInt(limit))) {
+              //toAndFromLog.length = 0;
+              console.log("Length of array: " + toAndFromLog.length);
+              logLimit = toAndFromLog.length;
             }
-            let limitedLog = toAndFromLog.slice(0, limit);
+            else {
+              logLimit = parseInt(limit);
+            }
+            console.log("Here before limit log " + logLimit);
+            let limitedLog = toAndFromLog.slice(0, logLimit);
 
             //Return users log
             res.json({
