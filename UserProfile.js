@@ -1,14 +1,14 @@
 var mongoose = require('mongoose');
 const moment = require('moment');
 
-//mongoose.Promise = global.Promise;
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 mongoose.set('useNewUrlParser', true);
 
-const MONGO_URI = 'mongodb://john:N1teLockon@ds035787.mlab.com:35787/jwfccmongodb';
+//const MONGO_URI = 'mongodb://john:N1teLockon@ds035787.mlab.com:35787/jwfccmongodb';
 
-mongoose.connect(MONGO_URI, {
+//Connects to mongodb
+mongoose.connect(process.env.MONGO_URI, {
   keepAlive: true,
   reconnectTries: Number.MAX_VALUE,
   reconnectInterval: 500,
@@ -17,38 +17,14 @@ mongoose.connect(MONGO_URI, {
   useNewUrlParser: true
 });
 
+//Tests mongodb connection
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error: '));
 db.once('open', function callback() {
   console.log('Connected to Mongo Database');
 });
 
-let dateValidator = (date) => {
-  let regexDate = /^\d{4}\-\d{1,2}\-\d{1,2}$/;
-
-  if(!regexDate.test(date)) {
-    return false;
-  }
-  let dateBrokenApart = date.spilt('-');
-  let year = parseInt(dateBrokenApart[0], 10);
-  let month = parseInt(dateBrokenApart[1],10);
-  let day = parseInt(dateBrokenApart[2], 10);
-
-  if(year < 1000 || year > 3000 || month < 1 || month > 12) {
-    return false;
-  }
-  l
-  let monthLengths = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
-
-  if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0)) {
-    monthLengths[1] = 29;
-  }
-  return day > 0 && day <= monthLengths[month - 1];
-}
-
-let dateValidate = [dateValidator, 'Invalid Date'];
-
-//Path `duration` is required.
+//Schema for Log which is a part of UserProfile schema
 var LogSchema = mongoose.Schema({
   description: {
     type: String,
@@ -61,10 +37,10 @@ var LogSchema = mongoose.Schema({
   date: {
     type: Date,
     default: () => { return new Date() }
-    //validate: dateValidate
   }
 });
 
+//Schema for excerise log user
 let UserProfile = mongoose.Schema({
   _id: {type:String, trim: true},
   username: {type:String, trim:true, default:''},

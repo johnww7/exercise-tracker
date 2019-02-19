@@ -25,13 +25,19 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
+
 const createUser = require('./UserProfile.js').createUser;
 const checkUserName = require('./UserProfile.js').checkUserName;
+//-------------------------------------------------
+//Route creates a new users
+//-------------------------------------------------
 app.post('/api/exercise/new-user', urlencodedParser, (req, res) => {
   let userName = req.body.username;
   let userID = shortId.generate();
 
-  let createTimeout = setTimeout(()=> {next({message: 'timeout'}) }, timeout)
+  let createTimeout = setTimeout(()=> {next({message: 'timeout'}) }, timeout);
+  //Creates new user if name doesn't exist or if user exists sends to webpage
+  //user exists
   checkUserName(userName, (err, checkName) => {
     clearTimeout(createTimeout);
     if (err) {
@@ -50,26 +56,30 @@ app.post('/api/exercise/new-user', urlencodedParser, (req, res) => {
     }
   });
 
-  //res.json({_id:shortId.generate(), username: req.body.username});
 });
 
-
+//----------------------------------------------------------------------------
+//Route returns a users log based on the query string parameters in the Route
+//which are based on userId, from date, to date and limit of logs returned.
+//----------------------------------------------------------------------------
 app.get('/api/exercise/log', (req, res) =>{
   let {userId, from, to, limit} = req.query;
-  console.log('typeof limit: ' + typeof(limit));
 
-  //let logRequest = checkLogInput({userId, from, to, limit});
   if(userId === "" || userId === " "){
     res.send("unknown userId");
   }
   else {
     var userLog = userData.where({_id: userId});
+
+    //Finds user from query string by userId.
     userLog.findOne((err, data) => {
       if(err) { return next(err);}
       if(data) {
         userLog.select('id username count log');
 
-        if(from !== undefined && to !== undefined && limit !== undefined) {
+        //Returns log based on from, to and limit parameters
+        if((from !== undefined && moment(from, 'YYYY-MM-DD').isValid())
+        && (to !== undefined && moment(from, 'YYYY-MM-DD').isValid())&& limit !== undefined) {
           userLog.exec((err, result) => {
             if(err) { return next(err); }
             //Parse user log with from and to Dates
@@ -79,13 +89,11 @@ app.get('/api/exercise/log', (req, res) =>{
             let logLimit = 0;
             if(parseInt(limit) === 0 || isNaN(parseInt(limit))) {
               //toAndFromLog.length = 0;
-              console.log("Length of array: " + toAndFromLog.length);
               logLimit = toAndFromLog.length;
             }
             else {
               logLimit = parseInt(limit);
             }
-            console.log("Here before limit log " + logLimit);
             let limitedLog = toAndFromLog.slice(0, logLimit);
 
             //Return users log
@@ -100,14 +108,13 @@ app.get('/api/exercise/log', (req, res) =>{
           });
 
         }
+        //Returns user log based on from and to dates
         else if((from !== undefined && moment(from, 'YYYY-MM-DD').isValid()) &&
         (to !== undefined && moment(to, 'YYYY-MM-DD').isValid())) {
           userLog.exec((err, result) => {
-            console.log('here at from and to');
             if(err) { return next(err); }
             let toNewLog = dateFinder(result, from, to);
 
-            console.log('Display 2:' + toNewLog);
             res.json({
               _id: result.id,
               username: result.username,
@@ -118,10 +125,9 @@ app.get('/api/exercise/log', (req, res) =>{
             });
           });
         }
+        //Returns user log based on from date.
         else if(from !== undefined && (moment(from, 'YYYY-MM-DD').isValid())){
-          //let fromDateToISO = new Date(from).toISOString();
           userLog.exec((err, result) => {
-            console.log('here at from');
             if(err) { return next(err); }
             let newLog = result['log'].filter((elem) => {
               return elem.date >= new Date(from);
@@ -129,7 +135,6 @@ app.get('/api/exercise/log', (req, res) =>{
               return { description: logObj.description, duration: logObj.duration,
                 date: moment(logObj.date).format('ddd MMM DD YYYY') };
             });
-            console.log("Display: " + result);
             res.json({
               _id: result.id,
               username: result.username,
@@ -143,7 +148,6 @@ app.get('/api/exercise/log', (req, res) =>{
         else {
           userLog.exec((err, result) => {
             if(err) { return next(err); }
-            //res.send(result);
             let formatedLog = result['log'].map((elem) => {
               return { description: elem.description, duration: elem.duration,
                 date: moment(elem.date).format('ddd MMM DD YYYY') };
@@ -153,17 +157,18 @@ app.get('/api/exercise/log', (req, res) =>{
               log: formatedLog});
           });
         }
-          //res.send(data);
       }
       else {
         res.send("unknown userId");
       }
     });
   }
-
-  //res.send({userId, from, to, limit});
 });
 
+//-------------------------------------------------------------------
+//Returns logs in user log based on from and to date query parameters
+//and formats the date
+//------------------------------------------------------------------
 let dateFinder = (userLog, fromDate, toDate) => {
   let parsedLog = userLog['log'].filter((elem) => {
     return elem.date >= new Date(fromDate) && elem.date <= new Date(toDate);
@@ -175,6 +180,9 @@ let dateFinder = (userLog, fromDate, toDate) => {
 }
 
 const findAllUsers = require('./UserProfile.js').findAllUsers;
+//------------------------------------------------------------------------
+//Route returns all users in exercies log Database
+//---------------------------------------------------------------------
 app.get('/api/exercise/users', (req, res) => {
   let findUsersTimeout = setTimeout(()=> {next({message: 'timeout'}) }, timeout);
   findAllUsers((err, allUsers) => {
@@ -193,13 +201,16 @@ app.get('/api/exercise/users', (req, res) => {
 
 const findID = require('./UserProfile.js').findID;
 const findUserIdAndUpdate = require('./UserProfile.js').findUserIdAndUpdate;
+//----------------------------------------------------------------------
+//Route creates a new entry into exercise log for a user based on their id.
+//Tests to make sure id, description, duration and date fields are filled in
+//or are right input
+//-----------------------------------------------------------------------
 app.post('/api/exercise/add', urlencodedParser, (req, res) => {
   let id = req.body.userId;
   let description = req.body.description;
   let duration = req.body.duration;
   let date = req.body.date;
-
-  console.log('Result of dateval: ' + dateValidator(date));
 
   if(id === '' || id === ' ') {
     res.send('unknown _id');
@@ -223,19 +234,17 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
       invalidDate = true;
 
     }
+
     if(invalidDate) {
       res.send('Invalid Date');
     }
     else {
-      console.log('Dates format: ' + date);
       let addTimeout = setTimeout(()=> {next({message: 'timeout'}) }, timeout);
       findUserIdAndUpdate({id, description, duration, date}, (err, doc) => {
         clearTimeout(addTimeout);
         if(err) {
-          //console.log(err);
           res.send(err);
         }
-        console.log(doc);
         let formattedDoc = formattedLog(doc);
         res.json(formattedDoc);
       });
@@ -244,7 +253,9 @@ app.post('/api/exercise/add', urlencodedParser, (req, res) => {
 
 });
 
-
+//-------------------------------------------------------------
+//Formats log received to be sent back to user via webpage
+//----------------------------------------------------------
 let formattedLog = (logData) => {
   let logArray = logData.log;
   let newestLog = logArray[logArray.length-1];
@@ -258,30 +269,6 @@ let formattedLog = (logData) => {
 
 }
 
- let dateValidator = (date) => {
-   let regexDate = /^\d{4}\-\d{1,2}\-\d{1,2}$/;
-   console.log('is date valid: ' + regexDate.test(date));
-
-   if(regexDate.test(date) == false) {
-     return false;
-   }
-   let dateBrokenApart = date.split('-');
-   let year = parseInt(dateBrokenApart[0], 10);
-   let month = parseInt(dateBrokenApart[1],10);
-   let day = parseInt(dateBrokenApart[2], 10);
-
-   if(year < 1000 || year > 3000 || month < 1 || month > 12) {
-     return false;
-   }
-
-   let monthLengths = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
-
-   if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0)) {
-     monthLengths[1] = 29;
-   }
-   console.log(day > 0 && day <= monthLengths[month - 1]);
-   return day > 0 && day <= monthLengths[month - 1];
- }
 
 // Not found middleware
 app.use((req, res, next) => {
